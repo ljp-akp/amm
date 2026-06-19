@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Cyber Love Core</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+overflow:hidden;
+height:100vh;
+background:#000;
+font-family:"Microsoft YaHei",sans-serif;
+}
+
+#bg{
+position:fixed;
+left:0;
+top:0;
+width:100%;
+height:100%;
+z-index:0;
+}
+
+.center{
+position:absolute;
+left:50%;
+top:15%;
+transform:translateX(-50%);
+text-align:center;
+z-index:100;
+}
+
+.logo{
+font-size:38px;
+font-weight:bold;
+background:linear-gradient(
+90deg,
+#00ffff,
+#7d5fff,
+#00ffcc,
+#00ffff
+);
+background-size:300%;
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+animation:rainbow 6s linear infinite;
+}
+
+@keyframes rainbow{
+from{background-position:0%}
+to{background-position:300%}
+}
+
+.typing{
+margin-top:15px;
+color:white;
+font-size:20px;
+min-height:30px;
+text-shadow:0 0 10px #00ffff;
+}
+
+/* 能量核心 */
+
+.energy-core{
+position:fixed;
+left:50%;
+top:55%;
+transform:translate(-50%,-50%);
+width:180px;
+height:180px;
+z-index:20;
+}
+
+.core-heart{
+position:absolute;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+font-size:90px;
+animation:beat 1.5s infinite;
+filter:
+drop-shadow(0 0 15px #00ffff)
+drop-shadow(0 0 40px #00ffff)
+drop-shadow(0 0 80px #7d5fff);
+}
+
+@keyframes beat{
+0%,100%{
+transform:translate(-50%,-50%) scale(1);
+}
+50%{
+transform:translate(-50%,-50%) scale(1.2);
+}
+}
+
+.ring{
+position:absolute;
+left:50%;
+top:50%;
+border-radius:50%;
+transform:translate(-50%,-50%);
+border:2px solid rgba(0,255,255,.7);
+}
+
+.ring1{
+width:180px;
+height:180px;
+animation:spin1 8s linear infinite;
+}
+
+.ring2{
+width:240px;
+height:240px;
+border-color:#7d5fff;
+animation:spin2 10s linear infinite;
+}
+
+.ring3{
+width:300px;
+height:300px;
+border-color:#00ffcc;
+animation:spin1 14s linear infinite;
+}
+
+@keyframes spin1{
+from{
+transform:translate(-50%,-50%) rotate(0deg);
+}
+to{
+transform:translate(-50%,-50%) rotate(360deg);
+}
+}
+
+@keyframes spin2{
+from{
+transform:translate(-50%,-50%) rotate(360deg);
+}
+to{
+transform:translate(-50%,-50%) rotate(0deg);
+}
+}
+
+/* 粒子 */
+
+.energy-particle{
+position:absolute;
+width:6px;
+height:6px;
+border-radius:50%;
+background:#00ffff;
+box-shadow:
+0 0 10px #00ffff,
+0 0 20px #00ffff;
+}
+
+/* 弹窗 */
+
+.popup{
+position:fixed;
+padding:12px 18px;
+border-radius:16px;
+color:#fff;
+font-weight:bold;
+backdrop-filter:blur(10px);
+box-shadow:0 0 20px rgba(255,255,255,.3);
+animation:popup 3s forwards;
+z-index:9999;
+max-width:220px;
+}
+
+@keyframes popup{
+0%{
+opacity:0;
+transform:scale(.4);
+}
+15%{
+opacity:1;
+transform:scale(1);
+}
+85%{
+opacity:1;
+}
+100%{
+opacity:0;
+transform:translateY(-40px);
+}
+}
+
+/* 跟随爱心 */
+
+.follow-heart{
+position:fixed;
+pointer-events:none;
+z-index:9999;
+animation:follow 1s forwards;
+}
+
+@keyframes follow{
+to{
+opacity:0;
+transform:translateY(-40px) scale(2);
+}
+}
+
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<div class="center">
+<div class="logo">CYBER LOVE CORE</div>
+<div class="typing"></div>
+</div>
+
+<div class="energy-core">
+
+<div class="ring ring1"></div>
+<div class="ring ring2"></div>
+<div class="ring ring3"></div>
+
+<div class="core-heart">
+❤️
+</div>
+
+</div>
+
+<script>
+
+/* 星空背景 */
+
+const canvas=document.getElementById("bg");
+const ctx=canvas.getContext("2d");
+
+function resize(){
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+}
+resize();
+
+window.addEventListener("resize",resize);
+
+let stars=[];
+
+for(let i=0;i<300;i++){
+stars.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*2
+});
+}
+
+function drawStars(){
+
+ctx.clearRect(
+0,0,
+canvas.width,
+canvas.height
+);
+
+ctx.fillStyle="white";
+
+stars.forEach(s=>{
+
+ctx.beginPath();
+ctx.arc(
+s.x,
+s.y,
+s.r,
+0,
+Math.PI*2
+);
+ctx.fill();
+
+});
+
+requestAnimationFrame(drawStars);
+}
+
+drawStars();
+
+/* 打字机 */
+
+const typing=document.querySelector(".typing");
+
+const msgs=[
+"遇见你是最美好的意外",
+"我的世界因为你而发光",
+"喜欢你不止今天",
+"未来也想陪着你",
+"愿所有温柔都属于你"
+];
+
+let msgIndex=0;
+
+function typeText(){
+
+let text=msgs[msgIndex];
+typing.innerHTML="";
+
+let i=0;
+
+let timer=setInterval(()=>{
+
+typing.innerHTML+=text[i];
+
+i++;
+
+if(i>=text.length){
+
+clearInterval(timer);
+
+setTimeout(()=>{
+
+msgIndex=(msgIndex+1)%msgs.length;
+
+typeText();
+
+},2000);
+
+}
+
+},120);
+
+}
+
+typeText();
+
+/* 爱心提示 */
+
+const loveTexts=[
+"❤️ 我喜欢你",
+"❤️ 永远爱你",
+"❤️ 想一直陪着你",
+"❤️ 你是最特别的人"
+];
+
+const warmTexts=[
+"🌈 不要熬夜",
+"🌈 保持微笑",
+"🌈 天天好心情",
+"🌈 相信自己"
+];
+
+const colors=[
+"#ff0080",
+"#00ffff",
+"#7d5fff",
+"#00ffcc",
+"#ff6b6b"
+];
+
+function popup(text){
+
+let div=document.createElement("div");
+
+div.className="popup";
+div.innerHTML=text;
+
+div.style.background=
+colors[Math.floor(Math.random()*colors.length)];
+
+div.style.left=
+Math.random()*(window.innerWidth-220)+"px";
+
+div.style.top=
+Math.random()*(window.innerHeight-120)+"px";
+
+document.body.appendChild(div);
+
+setTimeout(()=>{
+div.remove();
+},3000);
+
+}
+
+setInterval(()=>{
+popup(
+loveTexts[
+Math.floor(Math.random()*loveTexts.length)
+]
+);
+},800);
+
+setInterval(()=>{
+popup(
+warmTexts[
+Math.floor(Math.random()*warmTexts.length)
+]
+);
+},3000);
+
+/* 手指跟随 */
+
+function createHeart(x,y){
+
+let heart=document.createElement("div");
+
+heart.className="follow-heart";
+heart.innerHTML="❤️";
+
+heart.style.left=x+"px";
+heart.style.top=y+"px";
+
+heart.style.fontSize=
+(20+Math.random()*25)+"px";
+
+document.body.appendChild(heart);
+
+setTimeout(()=>{
+heart.remove();
+},1000);
+
+}
+
+document.addEventListener("mousemove",e=>{
+createHeart(
+e.clientX,
+e.clientY
+);
+});
+
+document.addEventListener("touchmove",e=>{
+
+let t=e.touches[0];
+
+createHeart(
+t.clientX,
+t.clientY
+);
+
+},{passive:true});
+
+/* 能量粒子 */
+
+const core=document.querySelector(".energy-core");
+
+for(let i=0;i<80;i++){
+
+const p=document.createElement("div");
+
+p.className="energy-particle";
+
+core.appendChild(p);
+
+let angle=Math.random()*360;
+let radius=90+Math.random()*80;
+let speed=0.01+Math.random()*0.03;
+
+function animate(){
+
+angle+=speed*50;
+
+let x=
+Math.cos(angle*Math.PI/180)
+*radius;
+
+let y=
+Math.sin(angle*Math.PI/180)
+*radius;
+
+p.style.left=
+90+x+"px";
+
+p.style.top=
+90+y+"px";
+
+requestAnimationFrame(
+animate
+);
+
+}
+
+animate();
+
+}
+
+</script>
+
+</body>
+</html>
